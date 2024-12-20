@@ -2,12 +2,18 @@ import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import { MATERIALS } from "./physics/PhysicsMaterials";
 
+const HEAD_BOB_CYCLE_LENGTH = 60;
+const HEAD_BOB_HEIGHT = 0.1;
+const FLASHLIGHT_SPEED = 0.3;
+
 export class Player {
   public body: CANNON.Body;
   private movementDirection = new THREE.Vector3();
   public MOVE_SPEED = 25;
   private readonly MAX_VELOCITY = 50;
   public light: THREE.SpotLight;
+  public distanceWalked = 0;
+  public verticalOffset = 0;
 
   constructor(
     private physicsWorld: CANNON.World,
@@ -87,26 +93,45 @@ export class Player {
         this.body.velocity.x *= scale;
         this.body.velocity.z *= scale;
       }
+      this.distanceWalked += velocityMagnitude;
     } else {
       // Apply friction when no movement input
       this.body.velocity.x *= 0.85;
       this.body.velocity.z *= 0.85;
+      const velocityMagnitude = Math.sqrt(
+        this.body.velocity.x ** 2 + this.body.velocity.z ** 2
+      );
+      this.distanceWalked += velocityMagnitude;
     }
+
+    // Head bobbing
+    this.verticalOffset =
+      Math.sin((this.distanceWalked / HEAD_BOB_CYCLE_LENGTH) % Math.PI) *
+      HEAD_BOB_HEIGHT;
 
     // Update camera position
     this.camera.position.x = this.body.position.x;
-    this.camera.position.y = this.body.position.y + 1.5;
+    this.camera.position.y = this.body.position.y + 1.5 + this.verticalOffset;
     this.camera.position.z = this.body.position.z;
 
-    this.light.position.copy(this.camera.position);
-    this.light.target.position.set(
-      this.camera.position.x +
-        this.camera.getWorldDirection(new THREE.Vector3()).x,
-      this.camera.position.y +
-        this.camera.getWorldDirection(new THREE.Vector3()).y,
-      this.camera.position.z +
-        this.camera.getWorldDirection(new THREE.Vector3()).z
-    );
+    const cameraDirection = new THREE.Vector3();
+    this.camera.getWorldDirection(cameraDirection);
+
+    // Calculate the desired target position based on the camera's position and direction
+    const desiredTargetPosition = new THREE.Vector3()
+      .copy(this.camera.position)
+      .add(cameraDirection);
+
+    // Interpolate the spotlight's current target position 85% toward the desired target position
+    const easedTargetPosition = new THREE.Vector3()
+      .copy(this.light.target.position)
+      .lerp(desiredTargetPosition, FLASHLIGHT_SPEED);
+
+    // Update the spotlight's target position
+    this.light.target.position.copy(easedTargetPosition);
     this.light.target.updateMatrixWorld();
+
+    // Ensure the light follows the camera's position
+    this.light.position.copy(this.camera.position);
   }
 }
