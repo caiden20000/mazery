@@ -1,11 +1,12 @@
-import * as THREE from 'three';
-import * as CANNON from 'cannon-es';
-import { Player } from './Player';
-import { MATERIALS, CONTACT_MATERIALS } from './physics/PhysicsMaterials';
-import { SCENE_SETTINGS } from './constants/SceneConstants';
-import { kruzkal_maze, LightGrid, WallMaze } from './Maze';
-import CannonDebugger from 'cannon-es-debugger';
-import { OfficeTileMaterial } from './materials/OfficeTileMaterial';
+import * as THREE from "three";
+import * as CANNON from "cannon-es";
+import { Player } from "./Player";
+import { MATERIALS, CONTACT_MATERIALS } from "./physics/PhysicsMaterials";
+import { SCENE_SETTINGS } from "./constants/SceneConstants";
+import { kruzkal_maze, LightGrid, WallMaze } from "./Maze";
+import CannonDebugger from "cannon-es-debugger";
+import { OfficeTileMaterial } from "./materials/OfficeTileMaterial";
+import { CarpetMaterial } from "./materials/CarpetMaterial";
 
 interface PhysicsObject {
   mesh: THREE.Mesh;
@@ -36,7 +37,7 @@ export class GameScene {
     this.scene = new THREE.Scene();
     this.scene.background = SCENE_SETTINGS.SKY_COLOR;
     this.scene.fog = new THREE.Fog(
-      SCENE_SETTINGS.FOG_SETTINGS.color,
+      0,
       SCENE_SETTINGS.FOG_SETTINGS.near,
       SCENE_SETTINGS.FOG_SETTINGS.far
     );
@@ -54,30 +55,31 @@ export class GameScene {
     document.body.appendChild(this.renderer.domElement);
 
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0x404040, 1);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.scale.set(100, 100, 100);
-    directionalLight.position.set(10, 10, 10);
-    directionalLight.castShadow = true;
+    // const ambientLight = new THREE.AmbientLight(0x404040, 3);
+    // this.scene.add(ambientLight);
+    // const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    // directionalLight.scale.set(100, 100, 100);
+    // directionalLight.position.set(10, 10, 10);
+    // directionalLight.castShadow = true;
 
-    // const lightGrid = new LightGrid(this.scene, 3, 3, CEILING_LEVEL);
+    // // const lightGrid = new LightGrid(this.scene, 3, 3, CEILING_LEVEL);
 
-    // Configure shadow properties
-    directionalLight.shadow.mapSize.width =
-      SCENE_SETTINGS.SHADOW_SETTINGS.mapSize;
-    directionalLight.shadow.mapSize.height =
-      SCENE_SETTINGS.SHADOW_SETTINGS.mapSize;
-    directionalLight.shadow.camera.near =
-      SCENE_SETTINGS.SHADOW_SETTINGS.camera.near;
-    directionalLight.shadow.camera.far =
-      SCENE_SETTINGS.SHADOW_SETTINGS.camera.far;
-    const shadowSmoothness = 80;
-    directionalLight.shadow.camera.left = -shadowSmoothness;
-    directionalLight.shadow.camera.right = shadowSmoothness;
-    directionalLight.shadow.camera.top = -shadowSmoothness;
-    directionalLight.shadow.camera.bottom = shadowSmoothness;
+    // // Configure shadow properties
+    // directionalLight.shadow.mapSize.width =
+    //   SCENE_SETTINGS.SHADOW_SETTINGS.mapSize;
+    // directionalLight.shadow.mapSize.height =
+    //   SCENE_SETTINGS.SHADOW_SETTINGS.mapSize;
+    // directionalLight.shadow.camera.near =
+    //   SCENE_SETTINGS.SHADOW_SETTINGS.camera.near;
+    // directionalLight.shadow.camera.far =
+    //   SCENE_SETTINGS.SHADOW_SETTINGS.camera.far;
+    // const shadowSmoothness = 80;
+    // directionalLight.shadow.camera.left = -shadowSmoothness;
+    // directionalLight.shadow.camera.right = shadowSmoothness;
+    // directionalLight.shadow.camera.top = -shadowSmoothness;
+    // directionalLight.shadow.camera.bottom = shadowSmoothness;
 
-    this.scene.add(ambientLight, directionalLight);
+    // this.scene.add(directionalLight);
   }
 
   private setupPhysics() {
@@ -93,17 +95,14 @@ export class GameScene {
 
   private setupPlayer() {
     this.player = new Player(this.physicsWorld, this.camera);
+    this.scene.add(this.player.light);
   }
 
   private setupEnvironment() {
     // Ground
-    const groundGeometry = new THREE.PlaneGeometry(100, 100);
-    // const groundMaterial = OfficeTileMaterial();
-    const groundMaterial = new THREE.MeshStandardMaterial({
-      color: SCENE_SETTINGS.GROUND_COLOR,
-      roughness: 0.8,
-      metalness: 0.2,
-    });
+    const groundGeometry = new THREE.PlaneGeometry(500, 500);
+    const groundMaterial = CarpetMaterial();
+
     const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
     groundMesh.receiveShadow = true;
     groundMesh.rotation.x = -Math.PI / 2;
@@ -122,7 +121,7 @@ export class GameScene {
     this.physicsWorld.addBody(groundBody);
 
     // ceiling
-    const ceilingGeom = new THREE.PlaneGeometry(100, 100);
+    const ceilingGeom = new THREE.PlaneGeometry(500, 500);
     const ceilingMat = OfficeTileMaterial();
     const ceilingMesh = new THREE.Mesh(ceilingGeom, ceilingMat);
     ceilingMesh.receiveShadow = true;
@@ -185,7 +184,7 @@ export class GameScene {
   }
 
   private setupEventListeners() {
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(window.innerWidth, window.innerHeight);

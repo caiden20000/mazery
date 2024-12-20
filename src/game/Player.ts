@@ -1,12 +1,13 @@
-import * as THREE from 'three';
-import * as CANNON from 'cannon-es';
-import { MATERIALS } from './physics/PhysicsMaterials';
+import * as THREE from "three";
+import * as CANNON from "cannon-es";
+import { MATERIALS } from "./physics/PhysicsMaterials";
 
 export class Player {
   public body: CANNON.Body;
   private movementDirection = new THREE.Vector3();
-  private readonly MOVE_SPEED = 15;
-  private readonly MAX_VELOCITY = 5;
+  public MOVE_SPEED = 25;
+  private readonly MAX_VELOCITY = 50;
+  public light: THREE.SpotLight;
 
   constructor(
     private physicsWorld: CANNON.World,
@@ -14,6 +15,8 @@ export class Player {
   ) {
     this.setupPhysicsBody();
     this.camera.position.set(0, 2, 5);
+
+    this.light = new THREE.SpotLight(0xffffff, 3, 0, Math.PI / 5, 0.3, 0.5);
   }
 
   private setupPhysicsBody() {
@@ -76,14 +79,14 @@ export class Player {
       this.body.velocity.z += (targetVelocityZ - this.body.velocity.z) * 0.15;
 
       // Clamp velocity
-      this.body.velocity.x = Math.max(
-        Math.min(this.body.velocity.x, this.MAX_VELOCITY),
-        -this.MAX_VELOCITY
+      const velocityMagnitude = Math.sqrt(
+        this.body.velocity.x ** 2 + this.body.velocity.z ** 2
       );
-      this.body.velocity.z = Math.max(
-        Math.min(this.body.velocity.z, this.MAX_VELOCITY),
-        -this.MAX_VELOCITY
-      );
+      if (velocityMagnitude > this.MAX_VELOCITY) {
+        const scale = this.MAX_VELOCITY / velocityMagnitude;
+        this.body.velocity.x *= scale;
+        this.body.velocity.z *= scale;
+      }
     } else {
       // Apply friction when no movement input
       this.body.velocity.x *= 0.85;
@@ -94,5 +97,16 @@ export class Player {
     this.camera.position.x = this.body.position.x;
     this.camera.position.y = this.body.position.y + 1.5;
     this.camera.position.z = this.body.position.z;
+
+    this.light.position.copy(this.camera.position);
+    this.light.target.position.set(
+      this.camera.position.x +
+        this.camera.getWorldDirection(new THREE.Vector3()).x,
+      this.camera.position.y +
+        this.camera.getWorldDirection(new THREE.Vector3()).y,
+      this.camera.position.z +
+        this.camera.getWorldDirection(new THREE.Vector3()).z
+    );
+    this.light.target.updateMatrixWorld();
   }
 }

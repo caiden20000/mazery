@@ -8,12 +8,21 @@ import { Player } from "./Player";
 // If you tap forward, it does not occur.
 // This could be due to the physics engine, or something we're doing here.
 
+// Update to bug:
+// When setting walk/run speed, the player DOESN'T GO FASTER,,,
+// EXCEPT when going WEIRDLY DIAGONAL!
+// SO whatever is happening is VERY related to that.
+
+const WALK_SPEED = 8;
+const RUN_SPEED = 16;
+
 export class Controller {
   private controls: PointerLockControls;
   private moveForward = false;
   private moveBackward = false;
   private moveLeft = false;
   private moveRight = false;
+  private shift = false;
   private movementDirection = new THREE.Vector3();
 
   constructor(private player: Player, element: HTMLElement) {
@@ -43,6 +52,9 @@ export class Controller {
         case "Space":
           this.player.jump();
           break;
+        case "ShiftLeft":
+          this.shift = true;
+          break;
       }
     };
 
@@ -63,6 +75,9 @@ export class Controller {
         case "ArrowRight":
         case "KeyD":
           this.moveRight = false;
+          break;
+        case "ShiftLeft":
+          this.shift = false;
           break;
       }
     };
@@ -108,6 +123,8 @@ export class Controller {
     } else {
       this.player.setMovementDirection(new THREE.Vector3(0, 0, 0));
     }
+
+    this.player.MOVE_SPEED = this.shift ? RUN_SPEED : WALK_SPEED;
   }
 
   public lock() {

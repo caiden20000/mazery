@@ -1,6 +1,7 @@
-import * as THREE from 'three';
-import * as CANNON from 'cannon-es';
-import { MATERIALS } from '../physics/PhysicsMaterials';
+import * as THREE from "three";
+import * as CANNON from "cannon-es";
+import { MATERIALS } from "../physics/PhysicsMaterials";
+import { WallpaperMaterial } from "../materials/WallpaperMaterial";
 
 export class Wall {
   public mesh: THREE.Mesh;
@@ -34,23 +35,25 @@ export class Wall {
     const geometry = new THREE.BoxGeometry(width, height, Wall.WALL_THICKNESS);
 
     // Load and configure texture
-    const texture = Wall.textureLoader.load(
-      '/textures/bricks.jpg',
-      (texture) => {
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set(width, height);
-        texture.needsUpdate = true;
-      }
-    );
+    // const texture = Wall.textureLoader.load(
+    //   '/textures/bricks.jpg',
+    //   (texture) => {
+    //     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    //     texture.repeat.set(width, height);
+    //     texture.needsUpdate = true;
+    //   }
+    // );
 
-    // Create material with texture
-    const material = new THREE.MeshStandardMaterial({
-      map: texture,
-      roughness: 0.7,
-      metalness: 0.1,
-      bumpMap: texture,
-      bumpScale: 0.02,
-    });
+    // // Create material with texture
+    // const material = new THREE.MeshStandardMaterial({
+    //   map: texture,
+    //   roughness: 0.7,
+    //   metalness: 0.1,
+    //   bumpMap: texture,
+    //   bumpScale: 0.02,
+    // });
+
+    const material = WallpaperMaterial();
 
     // Create mesh
     this.mesh = new THREE.Mesh(geometry, material);

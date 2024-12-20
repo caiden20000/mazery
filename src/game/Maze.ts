@@ -1,6 +1,6 @@
-import { PointLight, Scene, Vector3 } from 'three';
-import * as CANNON from 'cannon-es';
-import { Wall } from './objects/Wall';
+import { PointLight, Scene, Vector3 } from "three";
+import * as CANNON from "cannon-es";
+import { Wall } from "./objects/Wall";
 
 // Shuffle array
 function shuffleArray<T>(arr: T[]): T[] {
@@ -40,7 +40,6 @@ export class Maze {
     countEdgesAsWalls: boolean = false
   ): boolean {
     if (x < 0 || x >= this.width || y < 0 || y >= this.height) return false;
-    console.log(x, y);
     if (face == Face.BOTTOM || face == Face.RIGHT) {
       return this.walls.get(this._posToKey(x, y, face)) as boolean;
     } else {
@@ -83,14 +82,14 @@ export class Maze {
   }
 
   toString(): string {
-    let result = ' _'.repeat(this.width) + '\n';
+    let result = " _".repeat(this.width) + "\n";
     for (let y = 0; y < this.height; y++) {
-      let row = '|';
+      let row = "|";
       for (let x = 0; x < this.width; x++) {
-        row += this.getWallValue(x, y, Face.BOTTOM) ? `_` : ' ';
-        row += this.getWallValue(x, y, Face.RIGHT) ? '|' : ' ';
+        row += this.getWallValue(x, y, Face.BOTTOM) ? `_` : " ";
+        row += this.getWallValue(x, y, Face.RIGHT) ? "|" : " ";
       }
-      result += row + '\n';
+      result += row + "\n";
     }
     return result;
   }

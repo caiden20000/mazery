@@ -1,4 +1,9 @@
-import { MeshPhysicalMaterial, TextureLoader, RepeatWrapping } from 'three';
+import {
+  MeshPhysicalMaterial,
+  TextureLoader,
+  RepeatWrapping,
+  LinearFilter,
+} from "three";
 
 const loader = new TextureLoader();
 
@@ -22,6 +27,8 @@ export function TexturedPhysicalMaterial(
     texture.wrapS = texture.wrapT = RepeatWrapping;
     texture.repeat.set(repeatX, repeatY);
     texture.needsUpdate = true;
+    // texture.generateMipmaps = false;
+    // texture.minFilter = LinearFilter; // Or another non-mipmap filter
   };
 
   return new MeshPhysicalMaterial({
