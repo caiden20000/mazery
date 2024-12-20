@@ -35,7 +35,7 @@ export class GameScene {
 
   private setupScene() {
     this.scene = new THREE.Scene();
-    this.scene.background = SCENE_SETTINGS.SKY_COLOR;
+    this.scene.background = new THREE.Color(0x000000);
     this.scene.fog = new THREE.Fog(
       0,
       SCENE_SETTINGS.FOG_SETTINGS.near,

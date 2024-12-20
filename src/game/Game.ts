@@ -1,5 +1,8 @@
-import { GameScene } from './GameScene';
-import { Controller } from './Controller';
+import { GameScene } from "./GameScene";
+import { Controller } from "./Controller";
+
+const FPS = 60;
+var lastFrameTime = window.performance.now();
 
 export class Game {
   private scene: GameScene;
@@ -8,22 +11,22 @@ export class Game {
   constructor() {
     this.scene = new GameScene();
     this.controller = new Controller(this.scene.player, document.body);
-    
+
     this.setupInstructions();
     this.start();
   }
 
   private setupInstructions() {
-    const instructions = document.createElement('div');
-    instructions.style.position = 'absolute';
-    instructions.style.top = '50%';
-    instructions.style.left = '50%';
-    instructions.style.transform = 'translate(-50%, -50%)';
-    instructions.style.textAlign = 'center';
-    instructions.style.color = 'white';
-    instructions.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    instructions.style.padding = '20px';
-    instructions.style.borderRadius = '5px';
+    const instructions = document.createElement("div");
+    instructions.style.position = "absolute";
+    instructions.style.top = "50%";
+    instructions.style.left = "50%";
+    instructions.style.transform = "translate(-50%, -50%)";
+    instructions.style.textAlign = "center";
+    instructions.style.color = "white";
+    instructions.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+    instructions.style.padding = "20px";
+    instructions.style.borderRadius = "5px";
     instructions.innerHTML = `
       Click to start<br><br>
       WASD or Arrow Keys to move<br>
@@ -32,16 +35,23 @@ export class Game {
     `;
     document.body.appendChild(instructions);
 
-    document.addEventListener('click', () => {
-      instructions.style.display = 'none';
+    document.addEventListener("click", () => {
+      instructions.style.display = "none";
       this.controller.lock();
     });
   }
 
   private start() {
-    const animate = () => {
+    const animate = (time: DOMHighResTimeStamp) => {
       requestAnimationFrame(animate);
-      
+
+      const currentFrameTime = time;
+      const frameInterval = 1000 / FPS;
+      if (currentFrameTime - lastFrameTime < frameInterval) return;
+
+      lastFrameTime =
+        currentFrameTime - ((currentFrameTime - lastFrameTime) % frameInterval);
+
       if (this.controller.isLocked) {
         this.controller.update();
         this.scene.player.update();
@@ -49,6 +59,6 @@ export class Game {
       this.scene.update();
     };
 
-    animate();
+    animate(window.performance.now());
   }
 }
