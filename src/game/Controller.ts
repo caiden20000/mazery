@@ -1,6 +1,12 @@
-import * as THREE from 'three';
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
-import { Player } from './Player';
+import * as THREE from "three";
+import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
+import { Player } from "./Player";
+
+// BUG: When walking at a shallow angle to an axis,
+// the player moves at a more severe angle.
+// This problem is exhibited on holding the key down.
+// If you tap forward, it does not occur.
+// This could be due to the physics engine, or something we're doing here.
 
 export class Controller {
   private controls: PointerLockControls;
@@ -18,23 +24,23 @@ export class Controller {
   private setupEventListeners() {
     const onKeyDown = (event: KeyboardEvent) => {
       switch (event.code) {
-        case 'ArrowUp':
-        case 'KeyW':
+        case "ArrowUp":
+        case "KeyW":
           this.moveForward = true;
           break;
-        case 'ArrowDown':
-        case 'KeyS':
+        case "ArrowDown":
+        case "KeyS":
           this.moveBackward = true;
           break;
-        case 'ArrowLeft':
-        case 'KeyA':
+        case "ArrowLeft":
+        case "KeyA":
           this.moveLeft = true;
           break;
-        case 'ArrowRight':
-        case 'KeyD':
+        case "ArrowRight":
+        case "KeyD":
           this.moveRight = true;
           break;
-        case 'Space':
+        case "Space":
           this.player.jump();
           break;
       }
@@ -42,27 +48,27 @@ export class Controller {
 
     const onKeyUp = (event: KeyboardEvent) => {
       switch (event.code) {
-        case 'ArrowUp':
-        case 'KeyW':
+        case "ArrowUp":
+        case "KeyW":
           this.moveForward = false;
           break;
-        case 'ArrowDown':
-        case 'KeyS':
+        case "ArrowDown":
+        case "KeyS":
           this.moveBackward = false;
           break;
-        case 'ArrowLeft':
-        case 'KeyA':
+        case "ArrowLeft":
+        case "KeyA":
           this.moveLeft = false;
           break;
-        case 'ArrowRight':
-        case 'KeyD':
+        case "ArrowRight":
+        case "KeyD":
           this.moveRight = false;
           break;
       }
     };
 
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keyup", onKeyUp);
   }
 
   public update() {
@@ -70,7 +76,7 @@ export class Controller {
 
     // Calculate movement direction
     this.movementDirection.set(0, 0, 0);
-    
+
     if (this.moveForward) this.movementDirection.z += 1;
     if (this.moveBackward) this.movementDirection.z -= 1;
     if (this.moveLeft) this.movementDirection.x -= 1;
@@ -78,17 +84,25 @@ export class Controller {
 
     if (this.movementDirection.length() > 0) {
       this.movementDirection.normalize();
-      
+
       // Apply movement in the direction the camera is facing
       const cameraDirection = new THREE.Vector3();
       this.player.camera.getWorldDirection(cameraDirection);
       cameraDirection.y = 0;
       cameraDirection.normalize();
 
-      const sideways = new THREE.Vector3(-cameraDirection.z, 0, cameraDirection.x);
+      const sideways = new THREE.Vector3(
+        -cameraDirection.z,
+        0,
+        cameraDirection.x
+      );
 
-      const moveX = this.movementDirection.x * sideways.x + this.movementDirection.z * cameraDirection.x;
-      const moveZ = this.movementDirection.x * sideways.z + this.movementDirection.z * cameraDirection.z;
+      const moveX =
+        this.movementDirection.x * sideways.x +
+        this.movementDirection.z * cameraDirection.x;
+      const moveZ =
+        this.movementDirection.x * sideways.z +
+        this.movementDirection.z * cameraDirection.z;
 
       this.player.setMovementDirection(new THREE.Vector3(moveX, 0, moveZ));
     } else {
