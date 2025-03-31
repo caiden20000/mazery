@@ -1,6 +1,6 @@
-import * as THREE from 'three';
+// import * as THREE from 'three';
 
 export function brickMaterial() {
-  const mat = new THREE.MeshPhysicalMaterial();
+  // const mat = new THREE.MeshPhysicalMaterial();
   
 }

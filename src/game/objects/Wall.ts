@@ -10,7 +10,7 @@ export class Wall {
   private static readonly WALL_THICKNESS = 0.2;
   private static readonly DEFAULT_HEIGHT = 3;
   private static readonly DEFAULT_WIDTH = 4;
-  private static readonly textureLoader = new THREE.TextureLoader();
+  // private static readonly textureLoader = new THREE.TextureLoader();
 
   constructor(
     private scene: THREE.Scene,

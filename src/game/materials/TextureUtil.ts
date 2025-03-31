@@ -2,7 +2,6 @@ import {
   MeshPhysicalMaterial,
   TextureLoader,
   RepeatWrapping,
-  LinearFilter,
 } from "three";
 
 const loader = new TextureLoader();

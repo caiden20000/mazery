@@ -3,8 +3,8 @@ import * as CANNON from "cannon-es";
 import { Player } from "./Player";
 import { MATERIALS, CONTACT_MATERIALS } from "./physics/PhysicsMaterials";
 import { SCENE_SETTINGS } from "./constants/SceneConstants";
-import { kruzkal_maze, LightGrid, WallMaze } from "./Maze";
-import CannonDebugger from "cannon-es-debugger";
+import { kruzkal_maze, WallMaze } from "./Maze";
+// import CannonDebugger from "cannon-es-debugger";
 import { OfficeTileMaterial } from "./materials/OfficeTileMaterial";
 import { CarpetMaterial } from "./materials/CarpetMaterial";
 
@@ -154,34 +154,34 @@ export class GameScene {
     new WallMaze(maze, this.scene, this.physicsWorld, CEILING_LEVEL);
 
     // Add Cannon.js debugger
-    const cannonDebugger = new CannonDebugger(this.scene, this.physicsWorld);
-    this.debugger = cannonDebugger;
+    // const cannonDebugger = new CannonDebugger(this.scene, this.physicsWorld);
+    // this.debugger = cannonDebugger;
   }
 
-  private addPhysicsCube(x: number, y: number, z: number) {
-    const size = 1;
-    const geometry = new THREE.BoxGeometry(size, size, size);
-    const material = new THREE.MeshStandardMaterial({
-      color: Math.random() * 0xffffff,
-      roughness: 0.7,
-      metalness: 0.3,
-    });
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    this.scene.add(mesh);
+  // private addPhysicsCube(x: number, y: number, z: number) {
+  //   const size = 1;
+  //   const geometry = new THREE.BoxGeometry(size, size, size);
+  //   const material = new THREE.MeshStandardMaterial({
+  //     color: Math.random() * 0xffffff,
+  //     roughness: 0.7,
+  //     metalness: 0.3,
+  //   });
+  //   const mesh = new THREE.Mesh(geometry, material);
+  //   mesh.castShadow = true;
+  //   mesh.receiveShadow = true;
+  //   this.scene.add(mesh);
 
-    const shape = new CANNON.Box(new CANNON.Vec3(size / 2, size / 2, size / 2));
-    const body = new CANNON.Body({
-      mass: 1,
-      shape: shape,
-      position: new CANNON.Vec3(x, y, z),
-      material: MATERIALS.ground,
-    });
-    this.physicsWorld.addBody(body);
+  //   const shape = new CANNON.Box(new CANNON.Vec3(size / 2, size / 2, size / 2));
+  //   const body = new CANNON.Body({
+  //     mass: 1,
+  //     shape: shape,
+  //     position: new CANNON.Vec3(x, y, z),
+  //     material: MATERIALS.ground,
+  //   });
+  //   this.physicsWorld.addBody(body);
 
-    this.physicsObjects.push({ mesh, body });
-  }
+  //   this.physicsObjects.push({ mesh, body });
+  // }
 
   private setupEventListeners() {
     window.addEventListener("resize", () => {

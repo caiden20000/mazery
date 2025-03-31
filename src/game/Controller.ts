@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
+import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 import { Player } from "./Player";
 
 // BUG: When walking at a shallow angle to an axis,
